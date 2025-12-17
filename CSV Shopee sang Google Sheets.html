@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<title>Shopee CSV to Google Sheets</title>
+<style>
+body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+h1 { text-align: center; color: #ee4d2d; }
+.container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+.upload-area { border: 2px dashed #ee4d2d; padding: 30px; text-align: center; margin: 20px 0; border-radius: 8px; background: #fffaf8; }
+button { background: #ee4d2d; color: white; border: none; padding: 10px 20px; margin: 10px; border-radius: 5px; cursor: pointer; font-size: 14px; }
+button:hover { background: #ff6b4a; }
+button:disabled { background: #ccc; cursor: not-allowed; }
+table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+th { background: #ee4d2d; color: white; }
+tr:nth-child(even) { background: #f9f9f9; }
+.preview { max-height: 400px; overflow-y: auto; margin: 20px 0; }
+.instructions { background: #e3f2fd; padding: 15px; border-radius: 5px; margin: 20px 0; }
+.copy-area { background: #f0f8f0; padding: 15px; border-radius: 5px; margin: 20px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>🛍️ Shopee CSV to Google Sheets</h1>
+    
+    <div class="instructions">
+        <h3>📝 Hướng dẫn sử dụng:</h3>
+        <ol>
+            <li>Tải file CSV từ Shopee Affiliate (file có tên dạng: "Lấy link sản phẩm hàng loạt...csv")</li>
+            <li>Upload file CSV vào đây</li>
+            <li>Xem trước dữ liệu và copy để dán vào Google Sheets</li>
+        </ol>
+    </div>
+
+    <div class="upload-area">
+        <input type="file" id="csvFile" accept=".csv" />
+        <br>
+        <button onclick="loadCSV()">📤 Upload CSV File</button>
+    </div>
+
+    <div id="dataInfo" style="display: none;">
+        <h3>📊 Dữ liệu đã load: <span id="productCount">0</span> sản phẩm</h3>
+    </div>
+
+    <div class="preview" id="previewArea" style="display: none;">
+        <h3>👀 Xem trước dữ liệu (10 sản phẩm đầu tiên):</h3>
+        <table id="previewTable">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Giá</th>
+                    <th>Hoa hồng</th>
+                    <th>Số bán</th>
+                    <th>Shop</th>
+                    <th>Link SP</th>
+                    <th>Link Affiliate</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="copy-area" id="copyArea" style="display: none;">
+        <h3>📋 Copy để dán vào Google Sheets:</h3>
+        <button onclick="copyToClipboard()">📎 Copy Data for Google Sheets</button>
+        <button onclick="downloadCSV()">💾 Download as CSV</button>
+        <br><br>
+        <textarea id="outputData" rows="10" style="width: 100%; padding: 10px; font-family: monospace;"></textarea>
+    </div>
+</div>
+
+<script>
+let products = [];
+
+function parsePrice(v) {
+    if (!v) return 0;
+    return Number(v.toString().replace(/[^0-9]/g, '')) || 0;
+}
+
+function parseSales(v) {
+    if (!v) return 0;
+    return Number(v.toString().replace(/[^0-9]/g, '')) || 0;
+}
+
+function loadCSV() {
+    const file = document.getElementById('csvFile').files[0];
+    if (!file) {
+        alert('Vui lòng chọn file CSV từ Shopee');
+        return;
+    }
+
+    // Kiểm tra tên file có phải từ Shopee không
+    if (!file.name.includes('Lấy link sản phẩm hàng loạt')) {
+        if (!confirm('File này có vẻ không phải từ Shopee Affiliate. Bạn có muốn tiếp tục?')) {
+            return;
+        }
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const csvContent = e.target.result;
+            processCSVData(csvContent);
+        } catch (error) {
+            alert('Lỗi khi đọc file: ' + error.message);
+        }
+    };
+    reader.readAsText(file, 'UTF-8');
+}
+
+function processCSVData(csvContent) {
+    const lines = csvContent.split('\n').filter(line => line.trim() !== '');
+    
+    if (lines.length < 2) {
+        alert('File CSV không có dữ liệu');
+        return;
+    }
+
+    // Xác định header
+    const headers = lines[0].split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(h => h.replace(/"/g, '').trim());
+    
+    products = [];
+    
+    for (let i = 1; i < lines.length; i++) {
+        const row = lines[i].split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
+        if (row.length < 9) continue;
+
+        try {
+            const product = {
+                id: (row[0] || '').replace(/"/g, '').trim(),
+                name: (row[1] || '').replace(/"/g, '').trim(),
+                price: parsePrice(row[2]),
+                sales: parseSales(row[3]),
+                shop: (row[4] || '').replace(/"/g, '').trim(),
+                rate: parsePrice(row[5]) / 100,
+                commission: parsePrice(row[6]),
+                link: (row[7] || '').replace(/"/g, '').trim(),
+                aff: (row[8] || '').replace(/"/g, '').trim()
+            };
+            
+            // Chỉ thêm sản phẩm có đầy đủ thông tin
+            if (product.name && product.price > 0) {
+                products.push(product);
+            }
+        } catch (error) {
+            console.warn('Lỗi xử lý dòng', i, error);
+        }
+    }
+
+    if (products.length === 0) {
+        alert('Không tìm thấy sản phẩm nào trong file CSV');
+        return;
+    }
+
+    showDataInfo();
+    showPreview();
+    prepareOutputData();
+}
+
+function showDataInfo() {
+    document.getElementById('dataInfo').style.display = 'block';
+    document.getElementById('productCount').textContent = products.length;
+}
+
+function showPreview() {
+    const previewArea = document.getElementById('previewArea');
+    const tbody = document.querySelector('#previewTable tbody');
+    
+    previewArea.style.display = 'block';
+    tbody.innerHTML = '';
+
+    // Hiển thị tối đa 10 sản phẩm đầu tiên
+    const previewProducts = products.slice(0, 10);
+    
+    previewProducts.forEach((product, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td title="${product.name}">${product.name.substring(0, 50)}${product.name.length > 50 ? '...' : ''}</td>
+            <td>₫${product.price.toLocaleString()}</td>
+            <td>₫${product.commission.toLocaleString()}</td>
+            <td>${product.sales.toLocaleString()}</td>
+            <td title="${product.shop}">${product.shop.substring(0, 20)}${product.shop.length > 20 ? '...' : ''}</td>
+            <td><a href="${product.link}" target="_blank" title="${product.link}">🔗 Link</a></td>
+            <td><a href="${product.aff}" target="_blank" title="${product.aff}">💰 Affiliate</a></td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function prepareOutputData() {
+    const copyArea = document.getElementById('copyArea');
+    const outputData = document.getElementById('outputData');
+    
+    copyArea.style.display = 'block';
+    
+    // Tạo dữ liệu cho Google Sheets (TSV format)
+    const headers = ['Tên sản phẩm', 'Giá', 'Hoa hồng', 'Số bán', 'Shop', 'Link sản phẩm', 'Link affiliate'];
+    let output = headers.join('\t') + '\n';
+    
+    products.forEach(product => {
+        const row = [
+            product.name,
+            `₫${product.price.toLocaleString()}`,
+            `₫${product.commission.toLocaleString()}`,
+            product.sales.toLocaleString(),
+            product.shop,
+            product.link,
+            product.aff
+        ].join('\t');
+        output += row + '\n';
+    });
+    
+    outputData.value = output;
+}
+
+function copyToClipboard() {
+    const outputData = document.getElementById('outputData');
+    outputData.select();
+    outputData.setSelectionRange(0, 99999); // For mobile devices
+    
+    try {
+        navigator.clipboard.writeText(outputData.value).then(() => {
+            alert('✅ Đã copy dữ liệu! Bây giờ bạn có thể dán vào Google Sheets');
+        });
+    } catch (err) {
+        // Fallback cho trình duyệt cũ
+        document.execCommand('copy');
+        alert('✅ Đã copy dữ liệu! Bây giờ bạn có thể dán vào Google Sheets');
+    }
+}
+
+function downloadCSV() {
+    const outputData = document.getElementById('outputData').value;
+    const blob = new Blob([outputData], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'shopee_products_export.csv');
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Kéo thả file
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('csvFile');
+    const uploadArea = document.querySelector('.upload-area');
+    
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.style.background = '#fff0eb';
+    });
+    
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadArea.style.background = '#fffaf8';
+    });
+    
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.style.background = '#fffaf8';
+        fileInput.files = e.dataTransfer.files;
+        loadCSV();
+    });
+});
+</script>
+</body>
+</html>

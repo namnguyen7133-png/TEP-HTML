@@ -1,0 +1,32 @@
+Tí,Sửu,Dần, Mão, Thìn, Tỵ, Ngọ, Mùi, Thân, Dậu, Tuất, Hợi
+A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,R,S,T,U,V,W,X,Y
+A,B,C,D,Đ,E,G,H,I,K,L,M,N,O,P,Q,R,S,T,U,V,X,Y
+A,Ă,Â,B,C,D,Đ,E,Ê,G,H,I,K,L,M,N,O,Ô,Ơ,P,Q,R,S,T,U,Ư,V,X,Y
+ĐỎ,VANG,LAM
+PHÚC,LỘC,THỌ
+MUA XE,CƯỚI VỢ,XÂY NHÀ,XÂY MỘ
+SINH , LÃO, BỆNH, TỬ
+LỬA,ĐẤT,VÀNG,NƯỚC,CÂY
+ĐẮNG,NGỌT,CAY,MẶN,CHUA
+CÂY NHỜ NƯỚC,LỬA NHỜ CÂY,ĐẤT NHỜ LỬA, VÀNG NHỜ ĐẤT, NƯỚC NHỜ VÀNG
+CỎ XUYÊN ĐẤT, ĐẤT NGĂN NƯỚC LŨ, NƯỚC DỘI LỬA, LỬA NUNG VÀNG, VÀNG CHẶT CÂY
+ĐẠO SĨ THAM MƯU, THƯƠNG GIA, CÔNG NHÂN, NÔNG DÂN, BINH TƯỚNG
+TƯỚNG, SĨ, TƯỢNG, XE, PHÁO, MÃ , TỐT
+VUA, HOÀNG HẬU, VOI, XE THÀNH, MÃ, TỐT
+ĐỒ,RÊ,MI,FA,SOL,LA,SI
+A,B,C,D,E,F,G
+H,I,J,K,L,M,N
+O,P,Q,R,S,T,U
+V,X,Y
+NHẤT,NHÌ,TAM,TỨ,NGŨ,LỤC
+BẰNG,HUYỀN,SẮC,HỎI,NGÃ,NẶNG
+
+Quý nhân: 0–65.25, Hiểm họa: 65.25–130.5, Thiên tai: 130.5–195.75, Thiên tài: 195.75–261, Phúc lộc: 261–326.25, Cô độc: 326.25–391.5, Thiên tặc: 391.5–456.75, Tể tướng: 456.75–522
+
+Tài: 0–53.625, Bệnh: 53.625–107.25, Ly: 107.25–160.875, Nghĩa: 160.875–214.5, Quan: 214.5–268.125, Kiếp: 268.125–321.75, Hại: 321.75–375.375, Bản: 375.375–429
+
+Đinh: 0–38.8, Hại: 38.8–77.6, Vượng: 77.6–116.4, Khổ: 116.4–155.2, Nghĩa: 155.2–194, Quan: 194–232.8, Tử: 232.8–271.6, Hưng: 271.6–310.4, Thất: 310.4–349.2, Tài: 349.2–388
+
+
+
+14, 21, 23, 28, 33, 38, 43, 48, 53, 58, 63, 68, 73, 78, 83, 88, 93, 98, 103, 108, 285, 298, 318

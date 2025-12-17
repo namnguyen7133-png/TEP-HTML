@@ -1,0 +1,23 @@
+viết kịch bản mô tả cách làm từ đầu đến cuối hay hấp dẫn cho game theo đầu đề , Mỗi lượt chơi có tình huống xã hội, đạo đức, kinh doanh, người chơi chọn cách xử trí, được cộng/trừ điểm, có phân tích ưu nhược điểm từng lựa chọn.											
+											
+Bao gồm các mối quan hệ gia đình (ông bà, cha mẹ, con cái, dâu rể, cháu chắt), bạn bè, hàng xóm, và tình huống tiêu cực (vu khống, ép buộc, bắt cóc, nịnh bợ...) kèm cách ứng xử đúng đắn.											
+											
+Có phần cập nhật tin tức, lịch âm – dương gắn vào giao diện.											
+											
+Game vừa giải trí vừa giáo dục giá trị văn hoá, đạo đức, xã hội Việt Nam.
+
+hiển thị đẹp mắt nổi bật, giải thích từ tiếng Anh trong câu, thuật ngữ chuyên nghành giải thích,  gắn giá cả dịch vụ nếu có trong đời thực.												
+											
+Tạo game HTML chơi trên trình duyệt về kinh doanh – chăm sóc sức khỏe – văn hoá Việt Nam, lồng ghép: âm lịch, ẩm thực, đạo đức, truyền thống, hạnh phúc, tự do, xã hội hiện đại.											
+											
+Mục tiêu game: xây dựng gia đình hạnh phúc, no ấm, đông vui, phát triển sự nghiệp từ số không bằng cách dùng đòn bẩy con người, vốn, công nghệ, tiến tới thành công. làm phúc là làm từ thiện công thức tài chính, có lộc là tâm linh biết ơn sự hy sinh của người bảo vệ cuộc sống cho mình , có con trai con gái nối dõi tông đường, tuổi thọ sống với niềm vui con cháu dạy dỗ nên người có ích cho xã hội....											
+											
+Cấu trúc game:	
+
+chọn lọc các tình tiết trong tài liệu để xây dựng game, tính toán hoàn thiện và thêm các nút bấm lựa chọn, 
+
+hướng dẫn thực hiện trò chơi bằng số thứ tự và lời nhắc khuyến khích người chơi 
+											
+tính điểm, bảng xếp hạng người đạt điểm cao nhất										
+											
+										

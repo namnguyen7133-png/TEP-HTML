@@ -1,0 +1,9 @@
+Lệnh cho Notebook LM / Gemini:										
+										
+Trích xuất toàn bộ nội dung, nhân vật, sự kiện, xung đột và giá trị đạo đức – xã hội – văn hoá trong video.										
+Chia video thành từng đoạn tình huống (scene).										
+Với mỗi đoạn, xác định: nhân vật, mối quan hệ, chủ đề (kinh doanh, sức khỏe, văn hoá, âm lịch, ẩm thực, truyền thống, đạo đức, hạnh phúc, tự do, xã hội, tội phạm).										
+Mô tả sự kiện chính và xung đột, sau đó tạo 3–5 lựa chọn xử trí cho người chơi, kèm ưu điểm – nhược điểm và mức điểm thưởng/phạt (phúc, lộc, tiền, sức khỏe, uy tín, tuổi thọ).										
+Ghi lại các yếu tố văn hoá (lễ Tết, món ăn, âm lịch, truyền thống) nếu có.										
+Đánh dấu tình huống nguy hiểm (bạo lực, vu khống, ép buộc, bắt cóc…).										
+Tổng hợp kết quả thành dạng dữ liệu có cấu trúc để dùng làm nội dung game HTML giáo dục – giải trí về “Kinh doanh, Sức khỏe và Văn hoá Việt Nam”.										

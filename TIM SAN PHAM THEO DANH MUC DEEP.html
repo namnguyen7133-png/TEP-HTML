@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phân Tích Tài Liệu & So Sánh Mặt Hàng</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+        }
+        
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 15px;
+        }
+        
+        .description {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .input-section {
+            flex: 2;
+            min-width: 400px;
+        }
+        
+        .products-section {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section-title h2 {
+            margin: 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        textarea, input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        textarea {
+            height: 300px;
+            resize: vertical;
+            font-family: monospace;
+            line-height: 1.4;
+        }
+        
+        textarea:focus, input:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        .search-input {
+            height: 50px;
+            font-size: 18px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        #clearBtn {
+            background-color: #e74c3c;
+        }
+        
+        #clearBtn:hover {
+            background-color: #c0392b;
+        }
+        
+        #analyzeBtn {
+            background-color: #2ecc71;
+        }
+        
+        #analyzeBtn:hover {
+            background-color: #27ae60;
+        }
+        
+        #filterBtn {
+            background-color: #9b59b6;
+        }
+        
+        #filterBtn:hover {
+            background-color: #8e44ad;
+        }
+        
+        .results-section {
+            margin-top: 30px;
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .stats {
+            background-color: #ecf0f1;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        #results {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 20px;
+            min-height: 200px;
+            max-height: 500px;
+            overflow-y: auto;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        
+        .highlight {
+            background-color: #ffeaa7;
+            padding: 1px 3px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #d35400;
+        }
+        
+        .products-list {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            height: 300px;
+            overflow-y: auto;
+        }
+        
+        .product-category {
+            margin-bottom: 20px;
+        }
+        
+        .category-title {
+            font-weight: bold;
+            color: #2c3e50;
+            padding: 8px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .category-title:hover {
+            background-color: #dfe6e9;
+        }
+        
+        .category-items {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .product-item {
+            padding: 6px 10px;
+            margin-bottom: 5px;
+            border-left: 3px solid #3498db;
+            background-color: white;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .product-item:hover {
+            background-color: #e3f2fd;
+            transform: translateX(5px);
+        }
+        
+        .product-item.selected {
+            background-color: #bbdefb;
+            border-left-color: #1565c0;
+            font-weight: bold;
+        }
+        
+        .product-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .product-filter select {
+            flex: 1;
+        }
+        
+        .legend {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        
+        .instructions {
+            background-color: #f9f9f9;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-top: 30px;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .instructions h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th {
+            background-color: #2c3e50;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .input-section, .products-section {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Phân Tích Tài Liệu & So Sánh Mặt Hàng</h1>
+        <p class="description">Nhập tài liệu và tìm kiếm chữ cái, đồng thời so sánh với danh mục mặt hàng theo cấp độ</p>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <div class="section-title">
+                    <h2>Phân Tích Tài Liệu</h2>
+                </div>
+                
+                <label for="document">1. Nhập tài liệu (dữ liệu CSV):</label>
+                <textarea id="document" placeholder="Dán tài liệu của bạn vào đây..."></textarea>
+                
+                <div style="margin-top: 15px;">
+                    <label for="searchChars">2. Nhập chữ cái cần tìm (có thể nhập nhiều chữ):</label>
+                    <input type="text" id="searchChars" class="search-input" placeholder="Ví dụ: abc, ABC, aA, kK, mM" value="kK">
+                </div>
+            </div>
+            
+            <div class="products-section">
+                <div class="section-title">
+                    <h2>Danh Sách Mặt Hàng Theo Cấp Độ</h2>
+                </div>
+                
+                <div class="product-filter">
+                    <select id="wealthLevel">
+                        <option value="all">Tất cả cấp độ</option>
+                        <option value="poor">Nghèo / Thu nhập thấp</option>
+                        <option value="average">Trung bình</option>
+                        <option value="rich">Khá giả / Giàu</option>
+                        <option value="vip">Đại gia - Biệt thự</option>
+                        <option value="corporate">Tập đoàn - Dinh thự</option>
+                    </select>
+                    <button id="filterBtn">Lọc</button>
+                </div>
+                
+                <div class="products-list" id="productsList">
+                    <!-- Danh sách sản phẩm sẽ được tải ở đây -->
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <label for="selectedProduct">Mặt hàng đã chọn:</label>
+                    <input type="text" id="selectedProduct" readonly>
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button id="analyzeBtn">Phân tích và Tìm kiếm</button>
+            <button id="clearBtn">Xóa kết quả</button>
+            <button id="loadSampleBtn">Tải dữ liệu mẫu</button>
+        </div>
+        
+        <div class="results-section">
+            <div class="results-header">
+                <h2>Kết quả phân tích:</h2>
+                <div class="stats">
+                    Tìm thấy: <span id="matchCount">0</span> ký tự phù hợp
+                </div>
+            </div>
+            <div id="results">Kết quả sẽ hiển thị ở đây...</div>
+        </div>
+        
+        <div style="margin-top: 40px;">
+            <div class="section-title">
+                <h2>Bảng So Sánh Cấp Độ Nội Thất</h2>
+            </div>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Mức</th>
+                        <th>Chi phí nội thất</th>
+                        <th>Đặc trưng</th>
+                        <th>Ví dụ mặt hàng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Nghèo / Thu nhập thấp</strong></td>
+                        <td>&lt; 50 triệu</td>
+                        <td>Đủ dùng, rẻ, đa năng, bền</td>
+                        <td>Bàn gỗ tạp, ghế nhựa, TV cũ 32-43 inch</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Trung bình</strong></td>
+                        <td>50–200 triệu</td>
+                        <td>Tiện nghi, thẩm mỹ vừa, bền</td>
+                        <td>Sofa vải, TV 43-55 inch, tủ bếp MDF</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Khá giả / Giàu</strong></td>
+                        <td>200–800 triệu</td>
+                        <td>Đẹp, sang, tiện nghi, đồng bộ</td>
+                        <td>Sofa da thật, TV 65-75 inch, tủ rượu</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Đại gia - Biệt thự</strong></td>
+                        <td>1–10 tỷ</td>
+                        <td>Đẳng cấp, phong thủy, quyền lực</td>
+                        <td>Sofa da Ý, đèn chùm pha lê, hồ bơi</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tập đoàn - Dinh thự</strong></td>
+                        <td>Không giới hạn</td>
+                        <td>Biểu tượng quyền lực, nghệ thuật, công nghệ</td>
+                        <td>Nội thất bespoke, gỗ quý, smart home toàn diện</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="instructions">
+            <h3>Hướng dẫn sử dụng:</h3>
+            <ul>
+                <li><strong>Phân tích tài liệu:</strong> Dán hoặc nhập tài liệu vào ô 1, nhập các chữ cái cần tìm vào ô 2</li>
+                <li><strong>Danh sách mặt hàng:</strong> Chọn cấp độ và nhấn "Lọc" để xem các mặt hàng tương ứng</li>
+                <li><strong>Chọn mặt hàng:</strong> Nhấn vào mặt hàng trong danh sách để chọn và hiển thị trong ô "Mặt hàng đã chọn"</li>
+                <li><strong>Nhấn "Phân tích và Tìm kiếm"</strong> để xem kết quả tìm kiếm chữ cái</li>
+                <li><strong>Nhấn "Xóa kết quả"</strong> để làm mới kết quả phân tích</li>
+                <li><strong>Nhấn "Tải dữ liệu mẫu"</strong> để khôi phục dữ liệu mẫu</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Lấy các phần tử DOM
+        const documentInput = document.getElementById('document');
+        const searchCharsInput = document.getElementById('searchChars');
+        const resultsDiv = document.getElementById('results');
+        const matchCountSpan = document.getElementById('matchCount');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const loadSampleBtn = document.getElementById('loadSampleBtn');
+        const filterBtn = document.getElementById('filterBtn');
+        const wealthLevelSelect = document.getElementById('wealthLevel');
+        const productsList = document.getElementById('productsList');
+        const selectedProductInput = document.getElementById('selectedProduct');
+        
+        // Dữ liệu mẫu CSV
+        const sampleCSV = `Mã sản phẩm,Tên sản phẩm,Giá,Doanh thu,Tên cửa hàng,Tỉ lệ hoa hồng,Hoa hồng,Link sản phẩm,Link ưu đãi
+29828188090,"[NE12] Dép Massage Nesty EVA Quai Ngang Nam Nữ Siêu Nhẹ Chống Trượt | Dép Đi Trong Nhà, Đi Chơi, Đi Biển","68,9k",30k+,Nesty Việt Nam Store,9%,₫6.201,https://shopee.vn/product/618428702/29828188090,https://s.shopee.vn/1qUOqszchv
+26641194816,(HÀNG QC) HAVANA Áo cardigan len lông thỏ kẻ sọc ngang phối cúc đồng LEN252,"225,0k",5k+,Havana.danang,4%,₫9.000,https://shopee.vn/product/171811563/26641194816,https://s.shopee.vn/20np3ByzMy
+17532975547,"Thùng 30 gói giấy ăn rút Topgia 3 màu cao cấp 4 lớp dày dặn, mềm mịn, thùng 16/36/46 gói","59,0k",1tr+,TopGia HCM,10%,₫5.900,https://shopee.vn/product/729014007/17532975547,https://s.shopee.vn/2B7FFUyM21
+19481908850,"2- Áo phao giữ ấm cho bé, áo khoác béo mùa đông cho bé","21,8k",20k+,Mh kids Happybaby,8%,₫1.740,https://shopee.vn/product/1001782776/19481908850,https://s.shopee.vn/2LQfRnxih4
+29559146780,"Khăn quàng cổ bản to ấm áp BST màu trơn mới, khăn len choàng chất liệu dày dặn style Hàn Quốc","69,5k",60k+,Camellia Mart,5%,₫3.475,https://shopee.vn/product/66043535/29559146780,https://s.shopee.vn/2Vk5e6x5M7
+42210724290,Váy Nữ Đuôi Cá Trễ Vai Nhún Thân Ôm Body Phối Tơ Mềm Màu Đen Chất Tăm Hàn,"119,0k",1k+,Almira Store.,8%,₫9.520,https://shopee.vn/product/420779328/42210724290,https://s.shopee.vn/12kfW6bQe
+23250434729,"[FREESHIP 100%] TRỌN BỘ Chổi lau nhà tự vắt thông minh xoay 360 độ, THÙNG VÀ CÂY LAU, có bánh xe","150,0k",20k+,ZODAN Official Store,4%,₫6.000,https://shopee.vn/product/1041085930/23250434729,https://s.shopee.vn/BMArp5y5h
+29507153652,Thùng khăn ướt Topgia 80 tờ không cồn không parabens cao cấp dành cho mẹ và bé,"105,0k",90k+,TopGia HCM,9%,₫9.450,https://shopee.vn/product/729014007/29507153652,https://s.shopee.vn/Lfb485Kkk
+18395818296,Set 10 set 5 đôi tất vớ lót lông nỉ sinh nhiệt cổ cao dày dặn giữ ấm mùa đông phong cách Hàn Quốc pastel,"39,9k",20k+,DORAS COOL,8%,₫3.192,https://shopee.vn/product/126550624/18395818296,https://s.shopee.vn/Vz1GR4hPn
+18748826356,Chăn lông cừu chữ vạn Hàng Loại 1 chăn mùa đông dày bông đắp nhẹ siêu phẩm 2024,"209,0k",20k+,Xưởng Chăn Ga Dacosa,2%,₫4.180,https://shopee.vn/product/256686586/18748826356,https://s.shopee.vn/gIRSk444q`;
+        
+        // Dữ liệu mặt hàng theo cấp độ
+        const productsByWealthLevel = {
+            poor: [
+                {category: "Phòng khách", items: ["Bàn gỗ tạp / nhựa", "Ghế nhựa / ghế gỗ cũ", "Quạt đứng", "TV cũ (32–43 inch)", "Kệ TV đơn giản", "Bóng đèn LED trần", "Rèm vải mỏng"]},
+                {category: "Phòng ngủ", items: ["Giường sắt / giường gỗ tạp", "Nệm mỏng", "Chăn mền cơ bản", "Tủ quần áo vải / gỗ ép", "Quạt", "Bóng đèn tròn"]},
+                {category: "Bếp", items: ["Bếp gas đơn / bếp than", "Nồi nhôm, chảo nhôm", "Chén bát sành", "Bàn ăn gỗ nhỏ", "Kệ bếp inox đơn"]},
+                {category: "Nhà vệ sinh", items: ["Bồn cầu thường", "Xô chậu nhựa", "Gương nhỏ", "Vòi nước lạnh"]}
+            ],
+            average: [
+                {category: "Phòng khách", items: ["Sofa vải / giả da", "Bàn trà gỗ công nghiệp", "Kệ TV MDF", "TV 43–55 inch", "Điều hòa 1 chiều", "Đèn trần LED trang trí", "Rèm 2 lớp"]},
+                {category: "Phòng ngủ", items: ["Giường gỗ công nghiệp", "Nệm dày", "Tủ quần áo MDF", "Bàn trang điểm", "Điều hòa", "Đèn ngủ"]},
+                {category: "Bếp", items: ["Tủ bếp MDF chống ẩm", "Bếp gas âm / bếp từ", "Máy hút mùi", "Tủ lạnh", "Lò vi sóng", "Nồi inox, chảo chống dính"]},
+                {category: "Nhà vệ sinh", items: ["Bình nóng lạnh", "Lavabo treo", "Vòi sen", "Gương lớn"]}
+            ],
+            rich: [
+                {category: "Phòng khách", items: ["Sofa da thật", "Bàn trà đá / gỗ tự nhiên", "TV 65–75 inch", "Hệ loa", "Máy lạnh inverter", "Đèn chùm", "Thảm cao cấp", "Tranh trang trí"]},
+                {category: "Phòng ngủ", items: ["Giường gỗ tự nhiên", "Nệm cao su / memory foam", "Tủ quần áo lớn", "Bàn làm việc", "Rèm tự động", "Smart TV"]},
+                {category: "Bếp", items: ["Tủ bếp gỗ tự nhiên / acrylic", "Bếp từ đôi", "Lò nướng", "Máy rửa chén", "Máy lọc nước", "Tủ rượu"]},
+                {category: "Nhà vệ sinh", items: ["Vách kính tắm", "Sen cây", "Bồn tắm đứng / nằm", "Gương chống mờ"]}
+            ],
+            vip: [
+                {category: "Phòng khách", items: ["Sofa da Ý / gỗ nguyên khối", "Bàn trà đá tự nhiên", "Đèn chùm pha lê", "Thảm Ba Tư", "TV 85 inch / máy chiếu", "Hệ thống âm thanh vòm", "Tranh cổ, tượng quý"]},
+                {category: "Phòng ngủ Master", items: ["Giường king gỗ quý", "Nệm cao cấp nhập khẩu", "Phòng thay đồ riêng", "Ghế thư giãn", "Điều khiển thông minh"]},
+                {category: "Phòng bếp – ăn", items: ["Đảo bếp lớn", "Bếp từ đa vùng", "Máy rửa chén công nghiệp", "Tủ rượu vang âm tường", "Bàn ăn gỗ quý 8–20 ghế"]},
+                {category: "Khu riêng", items: ["Phòng thờ gỗ chạm", "Phòng làm việc lãnh đạo", "Phòng gym", "Phòng karaoke", "Hồ bơi", "Sân vườn, non bộ"]}
+            ],
+            corporate: [
+                {category: "Nội thất đặc biệt", items: ["Nội thất thiết kế riêng (bespoke)", "Gỗ lim, gõ đỏ, óc chó, mun", "Đá marble tự nhiên hiếm", "Đèn pha lê nhập châu Âu", "Hệ smart home toàn diện", "Phòng họp riêng", "Phòng tiếp khách VIP", "Phòng trưng bày sưu tập"]},
+                {category: "Hệ thống", items: ["An ninh nhiều lớp", "Camera AI", "Điều khiển giọng nói", "Điều hòa trung tâm", "Thang máy gia đình"]}
+            ]
+        };
+        
+        // Hàm tô màu các ký tự tìm thấy
+        function highlightCharacters(text, chars) {
+            if (!chars || chars.trim() === '') {
+                return {highlightedText: text, count: 0};
+            }
+            
+            const charArray = chars.split('');
+            let count = 0;
+            let highlightedText = '';
+            
+            for (let i = 0; i < text.length; i++) {
+                const currentChar = text[i];
+                let found = false;
+                
+                for (let j = 0; j < charArray.length; j++) {
+                    if (currentChar === charArray[j]) {
+                        highlightedText += `<span class="highlight">${currentChar}</span>`;
+                        count++;
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (!found) {
+                    highlightedText += currentChar;
+                }
+            }
+            
+            return {highlightedText, count};
+        }
+        
+        // Hàm phân tích và hiển thị kết quả
+        function analyzeDocument() {
+            const documentText = documentInput.value;
+            const searchChars = searchCharsInput.value;
+            
+            if (!documentText.trim()) {
+                resultsDiv.innerHTML = '<div style="color: #e74c3c; text-align: center;">Vui lòng nhập tài liệu để phân tích!</div>';
+                matchCountSpan.textContent = '0';
+                return;
+            }
+            
+            if (!searchChars.trim()) {
+                resultsDiv.innerHTML = '<div style="color: #e74c3c; text-align: center;">Vui lòng nhập ít nhất một chữ cái để tìm kiếm!</div>';
+                matchCountSpan.textContent = '0';
+                return;
+            }
+            
+            const {highlightedText, count} = highlightCharacters(documentText, searchChars);
+            
+            resultsDiv.innerHTML = highlightedText;
+            matchCountSpan.textContent = count.toLocaleString();
+            
+            // Cuộn đến phần tử đầu tiên được tô sáng
+            const firstHighlight = resultsDiv.querySelector('.highlight');
+            if (firstHighlight) {
+                firstHighlight.scrollIntoView({behavior: 'smooth', block: 'center'});
+            }
+        }
+        
+        // Hàm xóa kết quả
+        function clearResults() {
+            resultsDiv.innerHTML = 'Kết quả sẽ hiển thị ở đây...';
+            matchCountSpan.textContent = '0';
+        }
+        
+        // Hàm tải dữ liệu mẫu
+        function loadSampleData() {
+            documentInput.value = sampleCSV;
+            searchCharsInput.value = 'kK';
+            clearResults();
+        }
+        
+        // Hàm hiển thị danh sách sản phẩm
+        function displayProducts(level = 'all') {
+            productsList.innerHTML = '';
+            
+            if (level === 'all') {
+                // Hiển thị tất cả các cấp độ
+                Object.keys(productsByWealthLevel).forEach(levelKey => {
+                    const levelName = getLevelName(levelKey);
+                    const levelData = productsByWealthLevel[levelKey];
+                    
+                    const levelHeader = document.createElement('div');
+                    levelHeader.className = 'category-title';
+                    levelHeader.innerHTML = `<span>${levelName}</span> <span>▼</span>`;
+                    
+                    const levelContent = document.createElement('div');
+                    levelContent.className = 'category-items';
+                    
+                    levelHeader.addEventListener('click', function() {
+                        levelContent.style.display = levelContent.style.display === 'none' ? 'block' : 'none';
+                        levelHeader.innerHTML = levelContent.style.display === 'none' 
+                            ? `<span>${levelName}</span> <span>▶</span>`
+                            : `<span>${levelName}</span> <span>▼</span>`;
+                    });
+                    
+                    levelData.forEach(category => {
+                        const categoryTitle = document.createElement('div');
+                        categoryTitle.className = 'category-title';
+                        categoryTitle.style.marginLeft = '10px';
+                        categoryTitle.style.fontSize = '14px';
+                        categoryTitle.innerHTML = `<span>${category.category}</span> <span>▼</span>`;
+                        
+                        const categoryItems = document.createElement('div');
+                        categoryItems.className = 'category-items';
+                        categoryItems.style.marginLeft = '10px';
+                        
+                        categoryTitle.addEventListener('click', function() {
+                            categoryItems.style.display = categoryItems.style.display === 'none' ? 'block' : 'none';
+                            categoryTitle.innerHTML = categoryItems.style.display === 'none'
+                                ? `<span>${category.category}</span> <span>▶</span>`
+                                : `<span>${category.category}</span> <span>▼</span>`;
+                        });
+                        
+                        category.items.forEach(item => {
+                            const itemElement = document.createElement('div');
+                            itemElement.className = 'product-item';
+                            itemElement.textContent = item;
+                            
+                            itemElement.addEventListener('click', function() {
+                                // Xóa class selected từ tất cả các item
+                                document.querySelectorAll('.product-item').forEach(el => {
+                                    el.classList.remove('selected');
+                                });
+                                
+                                // Thêm class selected cho item được chọn
+                                itemElement.classList.add('selected');
+                                selectedProductInput.value = item;
+                            });
+                            
+                            categoryItems.appendChild(itemElement);
+                        });
+                        
+                        levelContent.appendChild(categoryTitle);
+                        levelContent.appendChild(categoryItems);
+                    });
+                    
+                    productsList.appendChild(levelHeader);
+                    productsList.appendChild(levelContent);
+                });
+            } else {
+                // Hiển thị sản phẩm theo cấp độ được chọn
+                const levelName = getLevelName(level);
+                const levelData = productsByWealthLevel[level];
+                
+                const levelHeader = document.createElement('div');
+                levelHeader.className = 'category-title';
+                levelHeader.innerHTML = `<span>${levelName}</span>`;
+                levelHeader.style.cursor = 'default';
+                
+                productsList.appendChild(levelHeader);
+                
+                levelData.forEach(category => {
+                    const categoryTitle = document.createElement('div');
+                    categoryTitle.className = 'category-title';
+                    categoryTitle.innerHTML = `<span>${category.category}</span> <span>▼</span>`;
+                    
+                    const categoryItems = document.createElement('div');
+                    categoryItems.className = 'category-items';
+                    
+                    categoryTitle.addEventListener('click', function() {
+                        categoryItems.style.display = categoryItems.style.display === 'none' ? 'block' : 'none';
+                        categoryTitle.innerHTML = categoryItems.style.display === 'none'
+                            ? `<span>${category.category}</span> <span>▶</span>`
+                            : `<span>${category.category}</span> <span>▼</span>`;
+                    });
+                    
+                    category.items.forEach(item => {
+                        const itemElement = document.createElement('div');
+                        itemElement.className = 'product-item';
+                        itemElement.textContent = item;
+                        
+                        itemElement.addEventListener('click', function() {
+                            // Xóa class selected từ tất cả các item
+                            document.querySelectorAll('.product-item').forEach(el => {
+                                el.classList.remove('selected');
+                            });
+                            
+                            // Thêm class selected cho item được chọn
+                            itemElement.classList.add('selected');
+                            selectedProductInput.value = item;
+                        });
+                        
+                        categoryItems.appendChild(itemElement);
+                    });
+                    
+                    productsList.appendChild(categoryTitle);
+                    productsList.appendChild(categoryItems);
+                });
+            }
+        }
+        
+        // Hàm lọc sản phẩm theo cấp độ
+        function filterProducts() {
+            const selectedLevel = wealthLevelSelect.value;
+            displayProducts(selectedLevel);
+        }
+        
+        // Hàm lấy tên cấp độ
+        function getLevelName(levelKey) {
+            const levelNames = {
+                poor: "Nghèo / Thu nhập thấp",
+                average: "Trung bình",
+                rich: "Khá giả / Giàu",
+                vip: "Đại gia - Biệt thự",
+                corporate: "Tập đoàn - Dinh thự"
+            };
+            
+            return levelNames[levelKey] || levelKey;
+        }
+        
+        // Gán sự kiện cho các nút
+        analyzeBtn.addEventListener('click', analyzeDocument);
+        clearBtn.addEventListener('click', clearResults);
+        loadSampleBtn.addEventListener('click', loadSampleData);
+        filterBtn.addEventListener('click', filterProducts);
+        
+        // Khởi tạo với dữ liệu mẫu
+        loadSampleData();
+        displayProducts('all');
+    </script>
+</body>
+</html>

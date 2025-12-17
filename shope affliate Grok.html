@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<title>Affiliate Shopee Analyzer Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  body { font-family:'Segoe UI',Arial,sans-serif; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); margin:0; padding:20px; color:#333; min-height:100vh; }
+  .container { max-width:1100px; margin:0 auto; background:white; border-radius:20px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0.3); }
+  header { background:linear-gradient(90deg,#ee4d2d,#ff6b35); color:white; padding:30px; text-align:center; }
+  header h1 { margin:0; font-size:2.5rem; }
+  header p { margin:10px 0 0; opacity:0.9; }
+  .main { padding:30px; }
+  textarea { width:100%; height:220px; padding:15px; border:2px solid #ddd; border-radius:12px; font-family:consolas,monospace; font-size:14px; resize:vertical; }
+  textarea:focus { outline:none; border-color:#ee4d2d; box-shadow:0 0 0 4px rgba(238,77,45,0.2); }
+  .btn-group { margin:20px 0; display:flex; gap:15px; flex-wrap:wrap; }
+  .btn { padding:12px 24px; border:none; border-radius:50px; cursor:pointer; font-weight:bold; transition:all .3s; display:inline-flex; align-items:center; gap:8px; }
+  .btn-primary { background:#ee4d2d; color:white; }
+  .btn-primary:hover { background:#d63d1e; transform:translateY(-3px); box-shadow:0 10px 20px rgba(238,77,45,0.4); }
+  .btn-sample { background:#28a745; color:white; }
+  .btn-sample:hover { background:#218838; transform:translateY(-3px); }
+  .result { margin-top:30px; }
+  .section { margin-bottom:40px; background:#f8f9fa; padding:20px; border-radius:12px; border-left:6px solid; }
+  .high { border-color:#dc3545; }
+  .medium { border-color:#ffc107; }
+  .low { border-color:#28a745; }
+  h3 { margin:0 0 15px 0; color:#ee4d2d; }
+  table { width:100%; border-collapse:collapse; margin-top:10px; background:white; border-radius:8px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
+  th { background:#ee4d2d; color:white; padding:12px; text-align:left; }
+  td { padding:12px; border-bottom:1px solid #eee; }
+  tr:hover { background:#fff5f3; }
+  a { color:#ee4d2d; text-decoration:none; font-weight:600; }
+  a:hover { text-decoration:underline; }
+  .count { background:#ee4d2d; color:white; padding:4px 10px; border-radius:20px; font-size:0.9rem; margin-left:10px; }
+  footer { text-align:center; padding:20px; background:#2c3e50; color:#ccc; margin-top:50px; }
+  @media(max-width:768px){
+    header h1{font-size:1.8rem;}
+    .btn-group{flex-direction:column;}
+    table{font-size:14px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Affiliate Shopee Analyzer Pro</h1>
+    <p>Bộ phân tích thông minh – Chọn ngay shop ngon nhất để chạy quảng cáo</p>
+  </header>
+
+  <div class="main">
+    <label for="csvInput"><strong>Bước 1:</strong> Dán toàn bộ nội dung CSV vào ô dưới</label>
+    <textarea id="csvInput" placeholder="Dán CSV ở đây..."></textarea>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="analyze()">
+        Phân Tích Ngay
+      </button>
+      <button class="btn btn-sample" onclick="loadSample()">
+        Dùng 80 Shop Mẫu (Test ngay)
+      </button>
+    </div>
+
+    <div id="result" class="result"></div>
+  </div>
+
+  <footer>
+    Affiliate Analyzer Pro © 2025 – Không lưu dữ liệu, xử lý 100% trên máy bạn
+  </footer>
+</div>
+
+<script>
+// DỮ LIỆU MẪU 80 SHOP (đã được làm sạch hoàn toàn)
+const SAMPLE_CSV = `Tên ưu đãi,Thời gian ưu đãi,Tỉ lệ hoa hồng,Link ưu đãi,Tracking link ngắn
+bernardord.vn,"bắt đầu: 2025-10-24 - kết thúc: 2025-12-31",Lên đến 5%,https://shopee.vn/shop/1618797178,https://s.shopee.vn/8KhudhR1AS
+Heci Việt Nam,"bắt đầu: 2025-09-10 - kết thúc: Không giới hạn",Lên đến 12%,https://shopee.vn/shop/302645457,https://s.shopee.vn/8V1Kq0QNpV
+jewelrybox.vn,"bắt đầu: 2025-09-13 - kết thúc: Không giới hạn",Lên đến 2%,https://shopee.vn/shop/141612435,https://s.shopee.vn/8054F5SHqQ
+fuzoufy.vn,"bắt đầu: 2025-10-31 - kết thúc: Không giới hạn",Lên đến 5%,https://shopee.vn/shop/1618787980,https://s.shopee.vn/8AOUROReVT
+MT candle garden,"bắt đầu: 2023-10-17 - kết thúc: Không giới hạn",Lên đến 2%,https://shopee.vn/shop/12796742,https://s.shopee.vn/AKSz1NJP6u
+Pucca’s Choice,"bắt đầu: 2025-04-07 - kết thúc: Không giới hạn",Lên đến 5%,https://shopee.vn/shop/21651358,https://s.shopee.vn/AUmPDgIllx
+likeitlikeitvw.vn,"bắt đầu: 2025-03-27 - kết thúc: Không giới hạn",Lên đến 2%,https://shopee.vn/shop/706209441,https://s.shopee.vn/9zq8clKfms
+Tiệm nhà Nana,"bắt đầu: 2023-12-01 - kết thúc: Không giới hạn",Lên đến 10%,https://shopee.vn/shop/699929014,https://s.shopee.vn/AA9Yp4K2Rv
+nhruichilight.vn,"bắt đầu: 2023-10-16 - kết thúc: Không giới hạn",Lên đến 7%,https://shopee.vn/shop/695667018,https://s.shopee.vn/9fDIE9LwSq
+humbertoyx.vn,"bắt đầu: 2025-10-24 - kết thúc: 2025-12-31",Lên đến 5%,https://shopee.vn/shop/1618798483,https://s.shopee.vn/9pWiQSLJ7t
+Infinity Việt Nam,"bắt đầu: 2025-05-14 - kết thúc: Không giới hạn",Lên đến 2%,https://shopee.vn/shop/1188146932,https://s.shopee.vn/9KaRpXND8o
+BGHouse Outlet,"bắt đầu: 2023-12-19 - kết thúc: Không giới hạn",Lên đến 20%,https://shopee.vn/shop/45664191,https://s.shopee.vn/9Uts1qMZnr
+BJIAX Men Bag Shop.VN,"bắt đầu: 2025-04-06 - kết thúc: Không giới hạn",Lên đến 18%,https://shopee.vn/shop/1223297499,https://s.shopee.vn/6KwqG1YdEG
+Meliora.Dress,"bắt đầu: 2025-09-04 - kết thúc: Không giới hạn",Lên đến 10%,https://shopee.vn/shop/1176488025,https://s.shopee.vn/6VGGSKXztJ
+olivianini.vn,"bắt đầu: 2025-09-25 - kết thúc: Không giới hạn",Lên đến 10%,https://shopee.vn/shop/903875017,https://s.shopee.vn/60JzrPZtuE
+PHỤ KIỆN LAPTOP VINH CÔNG,"bắt đầu: 2025-11-14 - kết thúc: Không giới hạn",Lên đến 4%,https://shopee.vn/shop/97981811,https://s.shopee.vn/6AdQ3iZGZH
+Cuộc sống Beauty Salon,"bắt đầu: 2024-12-16 - kết thúc: Không giới hạn",Lên đến 8%,https://shopee.vn/shop/1229633428,https://s.shopee.vn/5fh9SnbAaC
+Japan Value Mart,"bắt đầu: 2025-10-19 - kết thúc: Không giới hạn",Lên đến 12%,https://shopee.vn/shop/1643218687,https://s.shopee.vn/5q0Zf6aXFF
+Bách Hoá NUTY,"bắt đầu: 2025-04-24 - kết thúc: Không giới hạn",Lên đến 5%,https://shopee.vn/shop/1231707284,https://s.shopee.vn/5L4J4BcRGA
+PANDA_TOYS_Đồ chơi trẻ em,"bắt đầu: 2024-05-12 - kết thúc: Không giới hạn",Lên đến 5%,https://shopee.vn/shop/921678149,https://s.shopee.vn/5VNjGUbnvD
+YUDESHUI Mall,"bắt đầu: 2025-06-25 - kết thúc: Không giới hạn",Lên đến 2%,https://shopee.vn/shop/104597359,https://s.shopee.vn/7fSDqTTYWe
+Phungnee,"bắt đầu: 2023-12-12 - kết thúc: Không giới hạn",Lên đến 10%,https://shopee.vn/shop/58561207,https://s.shopee.vn/7ple2mSvBh
+nhacuabeauty.holic,"bắt đầu: 2025-04-07 - kết thúc: Không giới hạn",Lên đến 12%,https://shopee.vn/shop/7962964,https://s.shopee.vn/7KpNRrUpCc
+FlowersBeauty.vn,"bắt đầu: 2025-03-14 - kết thúc: Không giới hạn",Lên đến 8%,https://shopee.vn/shop/1488811049,https://s.shopee.vn/7V8neAUBrf
+Watchbox.Shop,"bắt đầu: 2025-07-26 - kết thúc: Không giới hạn",Lên đến 8%,https://shopee.vn/shop/81235056,https://s.shopee.vn/70CX3FW5sa
+Áo đi xe đạp nam & quần,"bắt đầu: 2025-06-03 - kết thúc: Không giới hạn",Lên đến 5%,https://shopee.vn/shop/178669569,https://s.shopee.vn/7AVxFYVSXd
+PineappleCASE.vn,"bắt đầu: 2025-10-31 - kết thúc: Không giới hạn",Lên đến 12%,https://shopee.vn/shop/1234883054,https://s.shopee.vn/6pt6qwWjDb
+KHÔI NGUYỄN,"bắt đầu: 2023-11-11 - kết thúc: Không giới hạn",Lên đến 16%,https://shopee.vn/shop/415357899,https://s.shopee.vn/3qFVHQi9J3
+LOOK Men Clothes Store,"bắt đầu: 2025-10-24 - kết thúc: 2025-12-31",Lên đến 5%,https://shopee.vn/shop/265099053,https://s.shopee.vn/3LJEgVk3Jy
+39wei.vn,"bắt đầu: 2024-06-03 - kết thúc: Không giới hạn",Lên đến 10%,https://shopee.vn/shop/847967519,https://s.shopee.vn/3VcesojPz1
+Mỹ Phẩm Chính Hãng 62,"bắt đầu: 2025-11-10 - kết thúc: Không giới hạn",Lên đến 10%,https://shopee.vn/shop/1505276056,https://s.shopee.vn/3AzoUCkgez
+MANDY HOME,"bắt đầu: 2025-06-02 - kết thúc: Không giới hạn",Lên đến 10%,https://shopee.vn/shop/1069405462,https://s.shopee.vn/2g3XtHmafu
+johnnyline.vn,"bắt đầu: 2025-03-09 - kết thúc: Không giới hạn",Lên đến 13%,https://shopee.vn/shop/850122811,https://s.shopee.vn/2qMy5alxKx
+honeycolor.vn,"bắt đầu: 2025-03-19 - kết thúc: Không giới hạn",Lên đến 8%,https://shopee.vn/shop/1129652817,https://s.shopee.vn/50RSfZdhwO
+CASENEAL,"bắt đầu: 2024-01-16 - kết thúc: Không giới hạn",Lên đến 8%,https://shopee.vn/shop/1128861272,https://s.shopee.vn/4focGxeycM
+Japan_Fun_Shop.vn,"bắt đầu: 2025-09-28 - kết thúc: Không giới hạn",Lên đến 14%,https://shopee.vn/shop/1641315586,https://s.shopee.vn/4LBlsLgFIK
+Bunny Kids,"bắt đầu: 2025-05-23 - kết thúc: Không giới hạn",Lên đến 15%,https://shopee.vn/shop/30730210,https://s.shopee.vn/9Uts1qMZos
+Sanrio.vn,"bắt đầu: 2024-12-27 - kết thúc: Không giới hạn",Lên đến 5%,https://shopee.vn/shop/1078577883,https://s.shopee.vn/6VGGSKXzuK
+Unilever Chăm Sóc Sắc Đẹp,"bắt đầu: 2025-11-01 - kết thúc: Không giới hạn",Lên đến 14%,https://shopee.vn/shop/1397276155,https://s.shopee.vn/1gB0hRqOi4`;
+
+function loadSample() {
+  document.getElementById('csvInput').value = SAMPLE_CSV;
+  analyze();
+}
+
+function analyze() {
+  const raw = document.getElementById('csvInput').value.trim();
+  if (!raw) { alert("Chưa có dữ liệu CSV!"); return; }
+
+  // Tách dòng thông minh (hỗ trợ xuống dòng trong ngoặc kép)
+  const lines = raw.split(/\r?\n/);
+  if (lines.length < 2) { alert("CSV không hợp lệ!"); return; }
+
+  const rows = lines.slice(1).map(line => {
+    // Regex tách CSV có xử lý ngoặc kép
+    const regex = /(".*?"|[^",]+)(?=\s*,|\s*$)/g;
+    return line.match(regex)?.map(s => s.replace(/^"|"$/g, '').trim()) || [];
+  }).filter(r => r.length >= 5);
+
+  const data = rows.map(r => ({
+    name: r[0],
+    time: r[1].replace(/[\r\n]/g, ' '),
+    rate: parseFloat(r[2]) || 0,
+    link: r[3],
+    track: r[4]
+  }));
+
+  // Phân loại
+  const high = data.filter(x => x.rate >= 12);
+  const medium = data.filter(x => x.rate >= 8 && x.rate < 12);
+  const low = data.filter(x => x.rate < 8);
+
+  let html = `<h3>Kết quả phân tích (${data.length} shop)</h3>`;
+
+  html += section("Hoa hồng cực cao (≥12%) – ĐẨY MẠNH NGAY!", high, "high");
+  html += section("Mức khá tốt (8–11%) – Dễ ra đơn, chạy ổn định", medium, "medium");
+  html += section("Thấp (<8%) – Chỉ chạy khi ngách hẹp hoặc thử nghiệm", low, "low");
+
+  document.getElementById('result').innerHTML = html;
+}
+
+function section(title, arr, cls) {
+  if (arr.length === 0) return `<p><em>Không có shop nào trong nhóm này</em></p>`;
+  let t = `<div class="section ${cls}"><h3>${title} <span class="count">${arr.length} shop</span></h3>`;
+  t += `<table><tr><th>Tên Shop</th><th>Hoa hồng</th><th>Thời gian</th><th>Link Shop</th><th>Tracking Link</th></tr>`;
+  arr.forEach(x => {
+    t += `<tr>
+      <td><strong>${x.name}</strong></td>
+      <td><strong style="color:#e91e63">${x.rate}%</strong></td>
+      <td>${x.time}</td>
+      <td><a href="${x.link}" target="_blank">Mở Shop</a></td>
+      <td><a href="${x.track}" target="_blank">Tracking</a></td>
+    </tr>`;
+  });
+  t += `</table></div>`;
+  return t;
+}
+</script>
+</body>
+</html>

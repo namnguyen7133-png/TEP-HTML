@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<title>Affiliate Analyzer</title>
+<style>
+ body { font-family: Arial; padding:20px; }
+ textarea { width:100%; height:200px; }
+ table { border-collapse: collapse; width:100%; margin-top:20px; }
+ th, td { border:1px solid #ccc; padding:8px; }
+ th { background:#f2f2f2; }
+ .btn { padding:8px 16px; background:#007bff; color:white; border:none; cursor:pointer; margin-top:10px; }
+ .btn:hover { background:#0056c1; }
+</style>
+</head>
+<body>
+<h2>📊 Affiliate Shopee – Bộ phân tích ra quyết định (Mục 4)</h2>
+<p>Dán dữ liệu CSV vào ô dưới → bấm Phân tích → hệ thống tự động phân loại theo hoa hồng và gợi ý shop nên chọn.</p>
+
+<textarea id="csvInput" placeholder="Dán CSV ở đây..."></textarea>
+<button class="btn" onclick="analyze()">Phân tích</button>
+
+<div id="result"></div>
+
+<script>
+function analyze(){
+    const raw = document.getElementById('csvInput').value.trim();
+    if(!raw){ alert("Chưa có CSV!"); return; }
+
+    const lines = raw.split(/\n(?=(?:[^"]*"[^"]*")*[^"]*$)/);
+    const rows = lines.map(l=>l.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/));
+
+    const header = rows.shift();
+    const data = rows.map(r => ({
+        name: r[0].replace(/"/g,''),
+        time: r[1].replace(/"/g,''),
+        rate: parseFloat(r[2].match(/\d+/)),
+        link: r[3],
+        track: r[4]
+    }));
+
+    let high = data.filter(x => x.rate >= 12);
+    let medium = data.filter(x => x.rate >= 8 && x.rate < 12);
+    let low = data.filter(x => x.rate < 8);
+
+    let html = "<h3>📌 Kết quả phân tích</h3>";
+
+    html += section("🔥 Hoa hồng rất cao (≥12%) – Nên ưu tiên mạnh", high);
+    html += section("👍 Mức khá (8% – 11%) – Dễ ra đơn", medium);
+    html += section("🙂 Thấp (<8%) – Chỉ phù hợp ngách", low);
+
+    document.getElementById('result').innerHTML = html;
+}
+
+function section(title, arr){
+    if(arr.length === 0) return "";
+    let t = `<h4>${title} (${arr.length})</h4>`;
+    t += `<table><tr><th>Tên Shop</th><th>Hoa hồng</th><th>Thời gian</th><th>Link</th></tr>`;
+    arr.forEach(x=>{
+        t += `<tr><td>${x.name}</td><td>${x.rate}%</td><td>${x.time}</td><td><a href='${x.link}' target='_blank'>Mở</a></td></tr>`;
+    });
+    t += `</table>`;
+    return t;
+}
+</script>
+</body>
+</html>

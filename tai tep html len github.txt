@@ -1,0 +1,20 @@
+Để tải tệp HTML từ máy tính lên GitHub và mở nó trên điện thoại, bạn có thể làm theo các bước sau:
+
+1. **Tạo một repository trên GitHub:** Nếu bạn chưa có, hãy tạo một repository mới để chứa tệp HTML của bạn.
+2. **Tải lên tệp HTML:**
+   - Truy cập repository vừa tạo trên GitHub.
+   - Chọn "Add file" → "Upload files" và tải lên tệp HTML từ máy tính của bạn.
+3. **Kích hoạt GitHub Pages:**
+   - Vào phần "Settings" của repository.
+   - Tìm mục "Pages" (hoặc "Website").
+   - Chọn branch chứa file HTML vừa tải lên (thường là branch `main`), sau đó lưu lại.
+   - GitHub sẽ cung cấp cho bạn một đường link để truy cập file HTML đó như một website.
+4. **Mở trên điện thoại:**
+   - Sau khi kích hoạt GitHub Pages, bạn sẽ nhận được một đường dẫn, ví dụ: `https://ten-nguoi-dung.github.io/ten-repo/ten-file.html`
+   - Sao chép đường dẫn này, gửi qua điện thoại (qua tin nhắn hoặc email) và mở bằng trình duyệt trên điện thoại là được.
+
+**Lưu ý:**  
+- Nếu bạn chưa có repository, tôi có thể hướng dẫn tạo mới hoặc giúp bạn tạo nhanh trên giao diện GitHub.
+- Nếu bạn muốn bảo mật, hãy tránh đăng những nội dung nhạy cảm lên repository công khai.
+
+Bạn muốn upload file hiện tại ngay bây giờ không? Nếu có, vui lòng gửi file HTML tại đây để tôi hướng dẫn chi tiết từng bước.

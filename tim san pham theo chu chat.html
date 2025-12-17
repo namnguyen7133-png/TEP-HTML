@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Lọc sản phẩm AFF (Bản ổn định)</title>
+<style>
+body{font-family:Arial;background:#f4f6f8;padding:20px}
+textarea,input{width:100%;padding:10px;margin:6px 0}
+textarea{height:220px;font-family:Consolas}
+button{padding:10px 18px;border:none;border-radius:4px;cursor:pointer}
+#run{background:#007bff;color:#fff}
+#next{background:#28a745;color:#fff;margin-left:10px}
+table{width:100%;border-collapse:collapse;background:#fff;margin-top:15px}
+th,td{border:1px solid #ccc;padding:8px;font-size:13px}
+th{background:#eee}
+.highlight{background:yellow;color:red;font-weight:bold}
+.status{background:#fff;padding:10px;border:1px solid #ccc;margin-top:10px}
+.ok{color:green;font-weight:bold}
+.end{color:red;font-weight:bold}
+</style>
+</head>
+<body>
+
+<h2>🔍 Lọc sản phẩm Affiliate (CHẠY CHUẨN)</h2>
+
+<b>1️⃣ Dữ liệu CSV</b>
+<textarea id="data"></textarea>
+
+<b>2️⃣ Từ khóa (dấu phẩy)</b>
+<input id="keywords" placeholder="ví dụ: áo,khăn,GUNO">
+
+<button id="run">Phân tích</button>
+<button id="next">Tiếp tục</button>
+
+<div id="status" class="status"></div>
+<div id="result"></div>
+
+<script>
+let allProducts=[];
+let filtered=[];
+let current=0;
+
+/* ==== CHUYỂN GIÁ ==== */
+function parsePrice(t){
+    if(!t) return 0;
+    t=t.toLowerCase().replace(/["₫\s]/g,"").replace(",",".");
+    if(t.includes("k")) return parseFloat(t)*1000;
+    return parseFloat(t)||0;
+}
+
+/* ==== CHUYỂN LƯỢT BÁN ==== */
+function parseSold(t){
+    if(!t) return 0;
+    t=t.toLowerCase().replace(/\+/g,"").replace(",",".");
+    if(t.includes("tr")) return parseFloat(t)*1000000;
+    if(t.includes("k")) return parseFloat(t)*1000;
+    return parseFloat(t)||0;
+}
+
+/* ==== CSV ==== */
+function parseCSV(text){
+    const lines=text.trim().split(/\r?\n/);
+    const arr=[];
+    for(let i=1;i<lines.length;i++){
+        const c=lines[i].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
+        if(!c||c.length<9) continue;
+        arr.push({
+            name:c[1].replace(/"/g,""),
+            price:parsePrice(c[2]),
+            sold:parseSold(c[3]),
+            rate:parseFloat(c[5])||0,
+            commission:c[6],
+            link:c[7],
+            aff:c[8]
+        });
+    }
+    return arr;
+}
+
+function highlight(text,keys){
+    let r=text;
+    keys.forEach(k=>{
+        r=r.replace(new RegExp(k,"gi"),m=>`<span class="highlight">${m}</span>`);
+    });
+    return r;
+}
+
+function updateStatus(){
+    document.getElementById("status").innerHTML=`
+    📦 Tổng CSV: <b>${allProducts.length}</b><br>
+    🎯 SP thỏa điều kiện: <b>${filtered.length}</b><br>
+    👀 Đã hiển thị: <b>${current}</b><br>
+    ${current>=filtered.length
+      ?'<span class="end">✅ ĐÃ TÌM HẾT</span>'
+      :'<span class="ok">➡️ CÒN SẢN PHẨM</span>'}
+    `;
+}
+
+function showNext(){
+    if(current>=filtered.length){
+        updateStatus();
+        document.getElementById("result").innerHTML="";
+        return;
+    }
+    const p=filtered[current++];
+    const keys=document.getElementById("keywords").value.split(",").map(k=>k.trim());
+    updateStatus();
+    document.getElementById("result").innerHTML=`
+    <table>
+    <tr>
+        <th>Tên SP</th>
+        <th>Giá</th>
+        <th>Đã bán</th>
+        <th>% HH</th>
+        <th>Hoa hồng</th>
+        <th>Link</th>
+        <th>AFF</th>
+    </tr>
+    <tr>
+        <td>${highlight(p.name,keys)}</td>
+        <td>${p.price.toLocaleString()} đ</td>
+        <td>${p.sold}</td>
+        <td>${p.rate}%</td>
+        <td>${p.commission}</td>
+        <td><a href="${p.link}" target="_blank">Xem</a></td>
+        <td><a href="${p.aff}" target="_blank">AFF</a></td>
+    </tr>
+    </table>`;
+}
+
+document.getElementById("run").onclick=()=>{
+    allProducts=parseCSV(document.getElementById("data").value);
+    const keys=document.getElementById("keywords").value
+        .split(",").map(k=>k.trim().toLowerCase()).filter(k=>k);
+
+    filtered=allProducts.filter(p=>{
+        if(p.price<50000||p.price>200000) return false;
+        if(p.sold<100) return false;
+        if(p.rate<3||p.rate>15) return false;
+        return keys.some(k=>p.name.toLowerCase().includes(k));
+    });
+
+    current=0;
+    updateStatus();
+    showNext();
+};
+
+document.getElementById("next").onclick=showNext;
+</script>
+
+</body>
+</html>
